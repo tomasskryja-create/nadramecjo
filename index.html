@@ -191,8 +191,8 @@ h1{text-shadow:0 4px 34px rgba(0,0,0,.5)}
 const K={email:"nadramec1@gmail.com",tel:"",ig:"nadramec.cz"};
 const rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
 const hv=document.getElementById("hv");
-if(!rm){hv.play().catch(()=>{document.body.classList.add("noauto")});new IntersectionObserver(e=>{e[0].isIntersecting?hv.play().catch(()=>{}):hv.pause()}).observe(hv);
-const alt=document.getElementById("alt");let t0;const run=t=>{t0??=t;const k=Math.min((t-t0)/2400,1);alt.textContent=Math.round(120*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(run)};requestAnimationFrame(run)}
+hv.play().catch(()=>{document.body.classList.add("noauto")});new IntersectionObserver(e=>{e[0].isIntersecting?hv.play().catch(()=>{}):hv.pause()}).observe(hv);
+if(!rm){const alt=document.getElementById("alt");let t0;const run=t=>{t0??=t;const k=Math.min((t-t0)/2400,1);alt.textContent=Math.round(120*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(run)};requestAnimationFrame(run)}
 const htc=document.getElementById("htc"),pv=document.getElementById("pv"),cap=document.getElementById("cap"),lab=document.getElementById("lab"),tc=document.getElementById("tc");
 const items=[...document.querySelectorAll(".svc button")];
 const fmt=t=>{const s=Math.floor(t),f=Math.floor((t-s)*30);return[Math.floor(s/60),s%60,f].map(n=>String(n).padStart(2,"0")).join(":")};
@@ -205,7 +205,7 @@ pv.addEventListener("timeupdate",()=>segs[cur]&&segs[cur].style.setProperty("--f
 items.forEach(b=>b.addEventListener("click",()=>pick(b,true)));pick(items[0],false);
 const scr=document.querySelector(".scr");
 scr.addEventListener("click",e=>{if(e.target.closest(".ic"))return;pv.paused?pv.play().catch(()=>{}):pv.pause()});
-if(!rm){new IntersectionObserver(e=>{e[0].isIntersecting?pv.play().catch(()=>{}):pv.pause()},{threshold:.5}).observe(scr);(function tick(){tc.textContent=fmt(pv.currentTime);htc.textContent=fmt(hv.currentTime);requestAnimationFrame(tick)})()}
+if(!rm){new IntersectionObserver(e=>{e[0].isIntersecting?pv.play().catch(()=>{}):pv.pause()},{threshold:.5}).observe(scr)}(function tick(){tc.textContent=fmt(pv.currentTime);htc.textContent=fmt(hv.currentTime);requestAnimationFrame(tick)})();
 const lb=document.getElementById("lb"),lv=lb.querySelector("video");
 document.getElementById("fb").addEventListener("click",()=>{lv.poster=pv.poster;lv.src=pv.currentSrc;pv.pause();lb.showModal();lv.play().catch(()=>{})});
 const shut=()=>{lv.pause();lb.close()};
@@ -270,9 +270,9 @@ gim.rotation.y=Math.sin(t*.7)*.55;gim.rotation.x=.25+Math.sin(t*1.1)*.18;
 leds.forEach(([m,f])=>m.color.setHex(f?(Math.sin(t*6)>0?0xff5a1f:0x5a1f0a):(Math.sin(t*6+3)>0.6?0xffffff:0x222222)));
 const q=(t*.8)%1;ring.scale.setScalar(1+q*1.2);ring.material.opacity=.5*(1-q);beam.material.opacity=.08+Math.sin(t*2)*.03;
 push();R.render(S,C)};
-if(rm){D.rotation.set(.2,-.65,0);D.position.set(bx,by,0);D.scale.setScalar(bs);R.render(S,C)}else{requestAnimationFrame(loop);new IntersectionObserver(e=>{run=e[0].isIntersecting}).observe(document.getElementById("hero"))}
+requestAnimationFrame(loop);new IntersectionObserver(e=>{run=e[0].isIntersecting}).observe(document.getElementById("hero"));
 })();
-addEventListener("pointerdown",()=>{if(hv.paused&&!rm)hv.play().then(()=>document.body.classList.remove("noauto")).catch(()=>{})},{once:true});
+addEventListener("pointerdown",()=>{if(hv.paused)hv.play().then(()=>document.body.classList.remove("noauto")).catch(()=>{})},{once:true});
 const hero=document.getElementById("hero");
 const onS=()=>{const p=Math.min(Math.max(scrollY/(hero.offsetHeight-innerHeight),0),1);hero.style.setProperty("--p",p);window.__p&&window.__p(p)};
 addEventListener("scroll",onS,{passive:true});onS();
