@@ -75,7 +75,7 @@ label{display:block;font-weight:700;font-size:15px;margin-bottom:6px}
 input,textarea{width:100%;padding:15px 16px;border:2px solid transparent;border-radius:10px;font:400 16px Manrope,sans-serif;background:#fff;color:var(--navy)}
 textarea{min-height:110px;resize:vertical}
 form .btn{background:var(--navy);color:#fff;font-size:17px}
-#st{min-height:1.5em;margin:0;font-weight:700}
+#st{min-height:1.5em;margin:0;font-weight:700}#st.ok,#st.err{color:var(--navy)}#st a{color:inherit}form{position:relative}form .btn:disabled{opacity:.6;cursor:wait}
 footer{background:var(--navy);color:#C9D3DD;padding:48px 0;font-size:15px}
 footer .w{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-end}
 @media(max-width:860px){.grid{grid-template-columns:1fr}.big .v{aspect-ratio:16/9}.rows li{grid-template-columns:1fr}.steps{grid-template-columns:1fr}.k .cols{grid-template-columns:1fr;gap:32px}}
@@ -181,7 +181,7 @@ h1{text-shadow:0 4px 34px rgba(0,0,0,.5)}
 <div><label for="kt">E-mail nebo telefon</label><input id="kt" name="kontakt" autocomplete="email" required></div>
 <div><label for="mi">Místo natáčení</label><input id="mi" name="misto"></div>
 <div><label for="zp">Co chcete natočit?</label><textarea id="zp" name="zprava"></textarea></div>
-<button class="btn" type="submit">Odeslat poptávku e-mailem</button><p id="st" role="status"></p>
+<input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0"><button class="btn" type="submit">Odeslat poptávku</button><p id="st" role="status"></p>
 </form></div></section>
 </main>
 <footer><div class="w"><div><a class="logo" href="#top" style="font-size:30px">N<i class="lam"></i>D<span>rámec</span></a><br>Záběry nad rámec.</div><div id="fc"></div><div>© 2026 NADrámec</div></div></footer>
@@ -213,12 +213,20 @@ lb.querySelector(".x").addEventListener("click",shut);lb.addEventListener("click
 function lines(el){[[K.tel,"tel:"+K.tel,K.tel],[K.email,"mailto:"+K.email,K.email],[K.ig,"https://instagram.com/"+K.ig,"Instagram @"+K.ig]].forEach(([v,h,t])=>{if(!v||(el.id=="ct"&&h.indexOf("instagram")>-1))return;const d=document.createElement(el.tagName=="UL"?"li":"div"),a=document.createElement("a");a.href=h;a.textContent=t;if(h.startsWith("http")){a.target="_blank";a.rel="noopener"}d.append(a);el.append(d)})}
 lines(document.getElementById("ct"));lines(document.getElementById("fc"));
 const f=document.getElementById("f"),st=document.getElementById("st");
-f.addEventListener("submit",e=>{e.preventDefault();const d=new FormData(f);
-if(!d.get("jmeno").trim()||!d.get("kontakt").trim()){st.textContent="Vyplňte prosím jméno a kontakt.";return}
-if(!K.email){st.textContent="Odesílání se právě nastavuje. Zkuste to prosím později.";return}
-const body="Jméno: "+d.get("jmeno")+"\nKontakt: "+d.get("kontakt")+"\nMísto natáčení: "+(d.get("misto")||"-")+"\n\n"+(d.get("zprava")||"");
-location.href="mailto:"+K.email+"?subject="+encodeURIComponent("Poptávka dronových záběrů")+"&body="+encodeURIComponent(body);
-st.textContent="Otevřeli jsme vám e-mail s poptávkou. Stačí ho odeslat."});
+f.addEventListener("submit",async e=>{e.preventDefault();const d=new FormData(f),bt=f.querySelector("button[type=submit]");
+const v=k=>(d.get(k)||"").toString().trim(),say=(t,c)=>{st.className=c||"";st.textContent=t};
+if(!v("jmeno")||!v("kontakt")){say("Vyplňte prosím jméno a kontakt.","err");return}
+if(v("_honey"))return;
+const kon=v("kontakt"),data={"Jméno":v("jmeno"),"Kontakt":kon,"Místo natáčení":v("misto")||"-","Zpráva":v("zprava")||"-",
+_subject:"Nová poptávka z webu: "+v("jmeno"),_template:"table",_captcha:"false"};
+if(/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(kon))data.email=kon;
+bt.disabled=true;say("Odesílám…");
+try{const r=await fetch("https://formsubmit.co/ajax/"+K.email,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(data)});
+const j=await r.json().catch(()=>({}));
+if(!r.ok||String(j.success)!=="true")throw new Error(j.message||r.status);
+f.reset();say("✓ Děkujeme, poptávka je odeslaná. Ozveme se co nejdřív.","ok")}
+catch(err){st.className="err";st.innerHTML='Poptávku se nepodařilo odeslat. Napište nám prosím přímo na <a href="mailto:'+K.email+'">'+K.email+'</a>.'}
+finally{bt.disabled=false}});
 (function(){
 if(!window.THREE)return;const cv=document.getElementById("gl");let R;try{R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true})}catch(e){return}
 R.setPixelRatio(Math.min(devicePixelRatio,2));
